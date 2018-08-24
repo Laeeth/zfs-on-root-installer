@@ -31,6 +31,7 @@ bootable-images: $(DISK_IMAGE) $(ISO_IMAGE)
 build-depends: debian/Makefile
 	$(foreach dir,$(SUBDIRS),$(MAKE) -C $(dir) $@ &&) true
 	sudo apt -y install ovmf xorriso expect mtools
+	sudo apt -y install salt-minion ldc
 
 # Calculate the basename of the debian build file
 DEBIAN_BASENAME = debian.$(CONFIG_DEBIAN_VER).$(CONFIG_DEBIAN_ARCH)
