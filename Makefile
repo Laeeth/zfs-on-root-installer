@@ -28,11 +28,18 @@ ISO_IMAGE := boot.iso
 .PHONY: bootable-images
 bootable-images: $(DISK_IMAGE) $(ISO_IMAGE)
 
+# bad we presume ubuntu - FIXME later
 build-depends: debian/Makefile
+	wget -O - https://repo.saltstack.com/apt/ubuntu/18.04/amd64/latest/SALTSTACK-GPG-KEY.pub | sudo apt-key add -
+	echo 'deb http://repo.saltstack.com/apt/ubuntu/18.04/amd64/latest bionic main' > /etc/apt/sources.list.d/saltstack.list
+	apt -y update
 	$(foreach dir,$(SUBDIRS),$(MAKE) -C $(dir) $@ &&) true
 	sudo apt -y install ovmf xorriso expect mtools
 	sudo apt -y install salt-minion ldc
-
+	cat <<EOF >> /etc/salt/minion
+	master: salt1.bare.symmetry.host
+	EOF
+	
 # Calculate the basename of the debian build file
 DEBIAN_BASENAME = debian.$(CONFIG_DEBIAN_VER).$(CONFIG_DEBIAN_ARCH)
 DEBIAN = debian/build/$(DEBIAN_BASENAME)
